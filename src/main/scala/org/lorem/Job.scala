@@ -19,7 +19,8 @@ package org.lorem
  */
 
 import org.apache.flink.api.scala._
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
+import play.api.libs.json.JsObject
 
 /**
  * Skeleton for a Flink Job.
@@ -40,7 +41,10 @@ object Job {
   def main(args: Array[String]): Unit = {
     // set up the execution environment
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    env.addSource(new APISource()).print()
+    // Read data stream =  ..., {"price": 185.45, "change_point": -0.07, "change_percentage": -0.04, "total_vol": "133.88M"}, ...
+    val stockData: DataStream[JsObject] = env.addSource(new APISource())
+    stockData.flatMap { _ \\ "price"}.print()
+
     /**
      * Here, you can start creating your execution plan for Flink.
      *

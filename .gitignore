@@ -1,33 +1,3 @@
-Skip to content
-Search or jump to…
-Pull requests
-Issues
-Codespaces
-Marketplace
-Explore
-
-@nizar-masmoudi
-digiou
-/
-flink-scala-sbt-skeleton
-Public
-Fork your own copy of digiou/flink-scala-sbt-skeleton
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-Insights
-flink-scala-sbt-skeleton/.gitignore
-@digiou
-digiou Initial commit
-Latest commit 5f57bab on Oct 25, 2016
- History
- 1 contributor
-115 lines (86 sloc)  1.62 KB
-
-
 #####=== Scala ===#####
 
 *.class
@@ -158,3 +128,6 @@ Training
 Blog
 About
 flink-scala-sbt-skeleton/.gitignore at master · digiou/flink-scala-sbt-skeleton
+
+# Env variables
+*.env

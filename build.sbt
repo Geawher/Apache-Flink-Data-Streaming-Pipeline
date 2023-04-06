@@ -3,6 +3,7 @@ ThisBuild / resolvers ++= Seq(
     Resolver.mavenLocal
 )
 
+
 name := "flink-stocks"
 
 version := "1.0"
@@ -16,12 +17,15 @@ val flinkVersion = "1.14.6"
 val flinkDependencies = Seq(
   "org.apache.flink" %% "flink-clients" % flinkVersion % "provided",
   "org.apache.flink" %% "flink-scala" % flinkVersion % "provided",
-  "org.apache.flink" %% "flink-streaming-scala" % flinkVersion % "provided")
+  "org.apache.flink" %% "flink-streaming-scala" % flinkVersion % "provided"
+)
 
 lazy val root = (project in file(".")).
   settings(
     libraryDependencies ++= flinkDependencies,
-    libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0"
+    libraryDependencies += "com.lihaoyi" %% "requests" % "0.8.0",
+    libraryDependencies += "com.typesafe" % "config" % "1.4.2",
+    libraryDependencies += "com.typesafe.play" %% "play-json" % "2.7.4"
   )
 
 assembly / mainClass := Some("org.lorem.Job")
