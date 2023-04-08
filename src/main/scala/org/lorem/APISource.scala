@@ -11,24 +11,28 @@ class APISource extends SourceFunction[Stock] {
   private val config: Config = ConfigFactory.load()
   // Utility class to
   override def run(ctx: SourceFunction.SourceContext[Stock]): Unit = {
+    val orgs = Array("TSLA", "AAPL", "NFLX", "GOOG")
     while (running) {
-      // GET request
-      val response: Response = requests.get(
-        "https://realstonks.p.rapidapi.com/TSLA",
-        headers = Map(
-          "X-RapidAPI-Key" -> config.getString("API_KEY"),
-          "X-RapidAPI-Host" -> "realstonks.p.rapidapi.com"
+      for (org <- orgs) {
+        // GET request
+        val response: Response = requests.get(
+          s"https://realstonks.p.rapidapi.com/$org",
+          headers = Map(
+            "X-RapidAPI-Key" -> config.getString("API_KEY"),
+            "X-RapidAPI-Host" -> "realstonks.p.rapidapi.com"
+          )
         )
-      )
-      val json: JsObject = Json.parse(response.text()).as[JsObject]
-      val stock = new Stock(
-        price = (json \ "price").as[Double],
-        changePoint = (json \ "change_point").as[Double],
-        changePercentage = (json \ "change_percentage").as[Double],
-        totalVal = (json \ "total_vol").as[String]
-      )
-      // Emit response
-      ctx.collect(stock)
+        val json: JsObject = Json.parse(response.text()).as[JsObject]
+        val stock = new Stock(
+          id = org,
+          price = (json \ "price").as[Double],
+          changePoint = (json \ "change_point").as[Double],
+          changePercentage = (json \ "change_percentage").as[Double],
+          totalVal = (json \ "total_vol").as[String]
+        )
+        // Emit response
+        ctx.collect(stock)
+      }
       // Wait 1000ms for next request
       Thread.sleep(1000)
     }

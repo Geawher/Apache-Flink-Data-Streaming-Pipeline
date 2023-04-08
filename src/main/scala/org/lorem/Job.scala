@@ -18,13 +18,16 @@ package org.lorem
  * limitations under the License.
  */
 
+import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.commons.math3.stat.descriptive.moment.Mean
 import org.apache.flink.api.common.functions.AggregateFunction
 import org.apache.flink.api.common.serialization.SimpleStringEncoder
+import org.apache.flink.streaming.api.functions.sink.filesystem.BucketAssigner
 import org.apache.flink.api.scala._
 import org.apache.flink.core.fs.Path
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.dataformat.csv.CsvSchema
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
+import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.{BasePathBucketAssigner, SimpleVersionedStringSerializer}
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.streaming.api.windowing.assigners.{SlidingEventTimeWindows, SlidingProcessingTimeWindows}
@@ -32,19 +35,34 @@ import org.apache.flink.streaming.api.windowing.time.Time
 
 import java.util.concurrent.TimeUnit
 
-class AverageAggregate extends AggregateFunction[Stock, (Double, Int), Double] {
-  override def createAccumulator(): (Double, Int) = (0.0, 0)
-  override def add(value: Stock, accumulator: (Double, Int)): (Double, Int) = (accumulator._1 + value.price, accumulator._2 + 1)
-  override def getResult(accumulator: (Double, Int)): Double = accumulator._1 / accumulator._2
-  override def merge(a: (Double, Int), b: (Double, Int)): (Double, Int) = (a._1 + b._1, a._2 + b._2)
+class AverageAggregate extends AggregateFunction[Stock, ((String, Double), Int), (String, Double)] {
+  override def createAccumulator(): ((String, Double), Int) = (("", 0.0), 0)
+  override def add(value: Stock, accumulator: ((String, Double), Int)): ((String, Double), Int) = ((value.id, accumulator._1._2 + value.price), accumulator._2 + 1)
+  override def getResult(accumulator: ((String, Double), Int)): (String, Double) = (accumulator._1._1, accumulator._1._2 / accumulator._2)
+  override def merge(a: ((String, Double), Int), b: ((String, Double), Int)): ((String, Double), Int) = ((a._1._1, a._1._2 + b._1._2), a._2 + b._2)
 }
 object Job {
   def main(args: Array[String]): Unit = {
+    // Load application.conf in resources
+    val config: Config = ConfigFactory.load()
     // set up the execution environment
     val env = StreamExecutionEnvironment.getExecutionEnvironment
 
-    val sink: StreamingFileSink[Double] = StreamingFileSink
-      .forRowFormat(new Path("C:\\Users\\nizar\\OneDrive\\Bureau"), new SimpleStringEncoder[Double]("UTF-8"))
+    class CustomBasePathBucketAssigner[T](basePath: String) extends BasePathBucketAssigner[T]() {
+      override def getBucketId(in: T, context: BucketAssigner.Context): String = {
+        // get a unique path for each element in the data stream
+        val element = in.asInstanceOf[(String, Double)]
+        val name = element._1
+        s"$basePath\\$name"
+      }
+
+      override def getSerializer: SimpleVersionedStringSerializer = {
+        SimpleVersionedStringSerializer.INSTANCE
+      }
+    }
+    val sink: StreamingFileSink[(String, Double)] = StreamingFileSink
+      .forRowFormat(new Path(config.getString("OUTPUT_FOLDER")), new SimpleStringEncoder[(String, Double)]("UTF-8"))
+      .withBucketAssigner(new CustomBasePathBucketAssigner(basePath = config.getString("OUTPUT_FOLDER") + "\\output"))
       .withRollingPolicy(
         DefaultRollingPolicy.builder()
           .withRolloverInterval(TimeUnit.MINUTES.toMillis(15))
@@ -57,10 +75,9 @@ object Job {
     val dataStream: DataStream[Stock] = env.addSource(new APISource)
     dataStream
       .keyBy( _.id )
-      .windowAll(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))) // Flink sliding window
+      .window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))) // Flink sliding window
       .aggregate(new AverageAggregate)
       .addSink(sink)
-
 
     // execute program
     env.execute("Flink Scala API Skeleton")

@@ -22,46 +22,47 @@ def main ():
 
 
     def animate(i):
-        #df = pd.read_csv('C:/Users/HP/Desktop/Flux/projet/git/real time stock data.csv')
-        
-        folder_path = "data flink/cryto1"  # Replace with the actual path to your folder
+        folder_path = "C:\\Users\\nizar\\OneDrive\\Bureau\\output\\TSLA"  # Replace with the actual path to your folder
+        df = pd.read_csv(folder_path, header = None)
+        df[1] = df[1].apply(lambda s: float(s[:-1]))
+
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
         # Sort the files by creation time
         files_sorted = sorted(files, key=lambda x: os.path.getctime(os.path.join(folder_path, x)))
         df = pd.DataFrame()
         for file in files_sorted:
-            path = "data flink/crypto1"+file
+            path = folder_path+"\\"+file
             df1 = pd.read_csv(path,sep=" ", header=None)
             df = df.append(df1)
 
         
-        folder_path = "data flink/crypto2"  # Replace with the actual path to your folder
+        folder_path = "C:\\Users\\nizar\\OneDrive\\Bureau\\2023-04-08--12"  # Replace with the actual path to your folder
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
         # Sort the files by creation time
         files_sorted = sorted(files, key=lambda x: os.path.getctime(os.path.join(folder_path, x)))
         df2 = pd.DataFrame()
         for file in files_sorted:
-            path = "data flink/crypto2"+file
+            path = folder_path+"\\"+file
             df1 = pd.read_csv(path,sep=" ", header=None)
             df2 = df2.append(df1)
 
-        folder_path = "data flink/crypto3"  # Replace with the actual path to your folder
+        folder_path = "C:\\Users\\nizar\\OneDrive\\Bureau\\2023-04-08--12"  # Replace with the actual path to your folder
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
         # Sort the files by creation time
         files_sorted = sorted(files, key=lambda x: os.path.getctime(os.path.join(folder_path, x)))
         df3 = pd.DataFrame()
         for file in files_sorted:
-            path = "data flink/crypto3"+file
+            path = folder_path+"\\"+file
             df1 = pd.read_csv(path,sep=" ", header=None)
             df3 = df3.append(df1)
 
-        folder_path = "data flink/crypto4"  # Replace with the actual path to your folder
+        folder_path = "C:\\Users\\nizar\\OneDrive\\Bureau\\2023-04-08--12"  # Replace with the actual path to your folder
         files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
         # Sort the files by creation time
         files_sorted = sorted(files, key=lambda x: os.path.getctime(os.path.join(folder_path, x)))
         df4 = pd.DataFrame()
         for file in files_sorted:
-            path = "data flink/crypto4"+file
+            path = folder_path+"\\"+file
             df1 = pd.read_csv(path,sep=" ", header=None)
             df4 = df4.append(df1)
 
