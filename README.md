@@ -2,7 +2,7 @@ A Flink application project using Scala and SBT.
 
 In our Apache Flink data processing pipeline, we used the window sliding method with a window size of 10 seconds and a slide length of 5 seconds.
 
-Make sure you have JVM, Scala and SBT installed.
+You need to make sure you have JVM, Scala and SBT installed.
 
 1. Change application configuration in file `src/main/resources/application.conf`
 ````
