@@ -11,6 +11,7 @@ from matplotlib import style
 import pandas as pd
 import os
 
+
 def main ():
     style.use("fivethirtyeight")
     fig = plt.figure()
@@ -23,7 +24,7 @@ def main ():
 
     def animate(i):
         folder_path = "C:\\Users\\nizar\\OneDrive\\Bureau\\output\\"  # Replace with the actual path to your folder
-        
+
         file = [f for f in os.listdir(os.path.join(folder_path, "TSLA")) if os.path.isfile(os.path.join(os.path.join(folder_path, "TSLA"), f))][0]
         df1 = pd.read_csv(os.path.join(folder_path, "TSLA", file), header = None)
         df1[1] = df1[1].apply(lambda s: float(s[:-1]))

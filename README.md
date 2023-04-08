@@ -1,13 +1,26 @@
 A Flink application project using Scala and SBT.
 
-To run and test your application locally, you can just execute `sbt run` then select the main class that contains the Flink job . 
+In our Apache Flink data processing pipeline, we used the window sliding method with a window size of 10 seconds and a slide length of 5 seconds.
 
-You can also package the application into a fat jar with `sbt assembly`, then submit it as usual, with something like: 
-
+Make sure you have JVM, Scala and SBT installed.
+1. Change application configuration in file `src/main/resources/application.conf`
+````
+API_KEY = --RealStoncks API key--
+OUTPUT_FOLDER = --Directory where flink sinks data--
+````
+2. Change Python script input directory in file `plotting/plotting.py`
+```python
+folder_path = "OUTPUT_FOLDER\\output"
 ```
-flink run -c org.example.WordCount /path/to/your/project/my-app/target/scala-2.11/testme-assembly-0.1-SNAPSHOT.jar
-```
+3. Start flink sever
+````bash
+sbt run
+````
+4. Run python script. Make sure to wait for flink to generate necessary files.
+````bash
+python plotting/plotting.py
+````
 
-
-You can also run your application from within IntelliJ:  select the classpath of the 'mainRunner' module in the run/debug configurations.
-Simply open 'Run -> Edit configurations...' and then select 'mainRunner' from the "Use classpath of module" dropbox. 
+The output of visualisation should look similar to this,
+<img src="output.png"/>
+Note - Stock prices are temporarily constant since we are in non-working days.
