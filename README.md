@@ -23,5 +23,5 @@ python plotting/plotting.py
 ````
 
 The output of visualisation should look similar to this,
-<img src="output.png"/>
+<img src="output_working_day.png"/>
 Note - Stock prices are temporarily constant since we are in non-working days.
