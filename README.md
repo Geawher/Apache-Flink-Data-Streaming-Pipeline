@@ -13,7 +13,7 @@ OUTPUT_FOLDER = --Directory where flink sinks data--
 ```python
 folder_path = "OUTPUT_FOLDER\\output"
 ```
-3. Start flink sever
+3. Start flink server
 ````bash
 sbt run
 ````
